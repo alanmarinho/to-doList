@@ -1,8 +1,9 @@
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import {db} from "../services/fireBaseConnection";
-import { getDoc, doc, Timestamp, updateDoc } from 'firebase/firestore';
-import { Form, Input, Select, Button, message, DatePicker} from 'antd';
+import { getDoc, doc, Timestamp, updateDoc, deleteDoc} from 'firebase/firestore';
+import { Form, Input, Select, Button, message, DatePicker, Modal} from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 export default function EditTarefa() {
@@ -76,6 +77,32 @@ export default function EditTarefa() {
     }
   }
 
+  const showPromiseConfirm = () => {
+
+    Modal.confirm({
+      title: 'Tem certeza?',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Você tem certeza que quer deletar este item?',
+      onOk() {
+        const handleDelete = async () => {
+          try{
+            await deleteDoc(doc(db, "tarefas", id));
+            success();
+            setTimeout(() => {
+              window.location.href = "/tarefas";
+            }, 700);
+    
+          }catch(error){
+            console.log(error)
+          }
+        };
+        handleDelete();
+      },
+      onCancel() {},
+    });
+  }
+
+
   const mensagem = "Preencha o campo"
   return (
     <div>
@@ -124,10 +151,11 @@ export default function EditTarefa() {
           </Form.Item>
 
           <Form.Item>
-            <Button className="bg-blue-500" type="primary" htmlType="submit">Editar tarefa</Button>
-          </Form.Item>           
-
+            <Button className="bg-green-500" type="primary" htmlType="submit">Editar tarefa</Button>
+          </Form.Item> 
         </Form>
+        <Button className="bg-yellow-300" onClick={() => { window.location.href = "/tarefas" }}>Cancelar</Button>  
+        <Button className="bg-red-500" onClick={() => { showPromiseConfirm()}}>Apagar tarefa</Button>      
       </div>
     </div>
     

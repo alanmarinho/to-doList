@@ -8,13 +8,17 @@ export default function FormDisabledDemo() {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
 
-  useEffect(() => {
+  const fillForm = () => {
     form.setFieldsValue({
       prioridade: 'comum',
       status: 'pendente',
       categoria: 'trabalho',
     });
-  }, [form]);
+  };
+
+  useEffect(() => {
+    fillForm();
+  }, []);
 
   const novaTarefa = async (values) => {
    try{
@@ -28,6 +32,7 @@ export default function FormDisabledDemo() {
       categoria: values.categoria,
     });
     form.resetFields()
+    fillForm();
     success(docRef);
    }catch(err){
     error();

@@ -1,7 +1,8 @@
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs,deleteDoc, doc } from 'firebase/firestore';
 import { useEffect, useState} from 'react';
 import {db} from "../services/fireBaseConnection";
-import { Table } from 'antd';
+import { Table, Modal } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 export default function AllTarefas() {
@@ -14,7 +15,31 @@ export default function AllTarefas() {
     };
     fetchData();
   }, []);
-  console.log(tarefas)
+
+  const showPromiseConfirm = (id) => {
+
+    Modal.confirm({
+      title: 'Tem certeza?',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Você tem certeza que quer deletar este item?',
+      onOk() {
+        const handleDelete = async () => {
+          try{
+            console.log(id)
+            await deleteDoc(doc(db, "tarefas", id));
+            const data = await getDocs(collection(db, "tarefas"));
+            setTarefas(data.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+    
+          }catch(error){
+            console.log(error)
+          }
+        };
+        handleDelete();
+      },
+      onCancel() {},
+    });
+  }
+
 
   const tableColumns = [
     {
@@ -64,9 +89,8 @@ export default function AllTarefas() {
       key: 'operacao',
       render: (_, record) => (
         <span className='flex gap-3 items-center justify-center'>
-          <a className='bg-red-500 p-2 rounded hover:bg-red-400 hover:text-black' >Apagar</a>
+          <a className='bg-red-500 p-2 rounded hover:bg-red-400 hover:text-black' onClick={() => showPromiseConfirm(record.id)}>Apagar</a>
           <a className='bg-green-500 p-2 rounded hover:bg-green-400 hover:text-black' href={`/tarefas/edit/${record.id}`}>Editar</a>
-          <a className='bg-blue-500 p-2 rounded hover:bg-blue-400 hover:text-black'>Ver</a>
         </span>
       ),
     },
