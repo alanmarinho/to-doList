@@ -1,61 +1,89 @@
-import { DatePicker, Form, Input, Select, Button, message } from "antd";
-import {useEffect} from "react";
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
 import {db} from "../services/fireBaseConnection";
-import { addDoc, collection, Timestamp} from "firebase/firestore";
+import { getDoc, doc, Timestamp, updateDoc } from 'firebase/firestore';
+import { Form, Input, Select, Button, message, DatePicker} from 'antd';
+import dayjs from 'dayjs';
 
-export default function FormDisabledDemo() {
+export default function EditTarefa() {
+  const { id } = useParams();
+  const [messageApi, contextHolder] = message.useMessage();
   const { RangePicker } = DatePicker;
   const [form] = Form.useForm();
-  const [messageApi, contextHolder] = message.useMessage();
 
+  
   useEffect(() => {
-    form.setFieldsValue({
-      prioridade: 'comum',
-      status: 'pendente',
-      categoria: 'trabalho',
-    });
-  }, [form]);
+    const fetchData = async () => {
+      const docRef = doc(db, "tarefas", id);
+      const docSnap = await getDoc(docRef);
+  
+      if (docSnap.exists()) {
+        const tarefaData = docSnap.data();
+        fillForm(tarefaData);
+      } else {
+        console.log("No such document!");
+      }
+    };
+    fetchData();
+  }, [id]);
 
-  const novaTarefa = async (values) => {
-   try{
-    const docRef = await addDoc(collection(db, "tarefas"), {
-      nome: values.nome,
-      dataInicio: Timestamp.fromDate(values.datas[0].toDate()),
-      dataFim: Timestamp.fromDate(values.datas[1].toDate()),
-      descricao: values.descricao,
-      prioridade: values.prioridade,
-      status: values.status,
-      categoria: values.categoria,
+  const fillForm = (tarefaData) => {
+    form.setFieldsValue({
+      prioridade: tarefaData.prioridade,
+      status: tarefaData.status,
+      categoria: tarefaData.categoria,
+      nome: tarefaData.nome,
+      descricao: tarefaData.descricao,
+      datas: [dayjs(tarefaData.dataInicio.toDate()), dayjs(tarefaData.dataFim.toDate())],
     });
-    form.resetFields()
-    success(docRef);
-   }catch(err){
-    error();
-    console.log(err)
-   }
   }
 
   const success = () => {
     messageApi.open({
       type: 'success',
-      content: `Tarefa adicionada com sucesso!`,
+      content: `Tarefa editada com sucesso!`,
     });
   };
 
   const error = () => {
     messageApi.open({
       type: 'error',
-      content: 'Erro ao adicionar tarefa!',
+      content: 'Erro ao editar tarefa!',
     });
   };
 
+  const editarTarefa = async (values) => {
+    try{
+      const docRef = doc(db, "tarefas", id);
+      await updateDoc(docRef,{
+        nome: values.nome,
+        dataInicio: Timestamp.fromDate(values.datas[0].toDate()),
+        dataFim: Timestamp.fromDate(values.datas[1].toDate()),
+        descricao: values.descricao,
+        prioridade: values.prioridade,
+        status: values.status,
+        categoria: values.categoria,
+      })
+      success();
+      setTimeout(() => {
+
+        window.location.href = "/tarefas";
+      }, 700);
+      
+    }catch(err){
+      error();
+      console.log(err)
+    }
+  }
+
   const mensagem = "Preencha o campo"
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div>
+    <h1 className="text-white text-4xl">Editar Tarefa</h1> 
+      <div className="flex flex-col items-center justify-center">
       {contextHolder}
-    <h1 className="text-white text-4xl">Nova Tarefa</h1>
     <div className="bg-slate-400 p-5  m-5">
-        <Form form={form} layout="horizontal" onFinish={novaTarefa} >
+        <Form form={form} layout="horizontal" onFinish={editarTarefa} >
           <Form.Item label="Tarefa"name="nome" rules={[{required: true, message:mensagem}]}>
             <Input type="text" />
           </Form.Item>
@@ -96,11 +124,14 @@ export default function FormDisabledDemo() {
           </Form.Item>
 
           <Form.Item>
-            <Button className="bg-blue-500" type="primary" htmlType="submit">Adicionar tarefa</Button>
+            <Button className="bg-blue-500" type="primary" htmlType="submit">Editar tarefa</Button>
           </Form.Item>           
 
         </Form>
       </div>
     </div>
+    
+  </div>
+   
   );
 }
