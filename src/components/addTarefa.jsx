@@ -10,9 +10,9 @@ export default function FormDisabledDemo() {
 
   const fillForm = () => {
     form.setFieldsValue({
-      prioridade: 'comum',
-      status: 'pendente',
-      categoria: 'trabalho',
+      prioridade: 'Comum',
+      status: 'Pendente',
+      categoria: 'Trabalho',
     });
   };
 
@@ -56,10 +56,10 @@ export default function FormDisabledDemo() {
 
   const mensagem = "Preencha o campo"
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center gap-3">
       {contextHolder}
     <h1 className="text-white text-4xl">Nova Tarefa</h1>
-    <div className="bg-slate-400 p-5  m-5">
+    <div className="bg-slate-400 p-3 rounded ">
         <Form form={form} layout="horizontal" onFinish={novaTarefa} >
           <Form.Item label="Tarefa"name="nome" rules={[{required: true, message:mensagem}]}>
             <Input type="text" />
@@ -75,11 +75,11 @@ export default function FormDisabledDemo() {
 
           <Form.Item label="Prioridade" name="prioridade" >
             <Select>
-              <Select.Option value="comum">Comum</Select.Option>
-              <Select.Option value="importante">Importante</Select.Option>
-              <Select.Option value="urgente">Urgente</Select.Option>
-              <Select.Option value="imediato">Imediato</Select.Option>
-              <Select.Option value="opcional">Opcional</Select.Option>
+              <Select.Option value="Comum">Comum</Select.Option>
+              <Select.Option value="Importante">Importante</Select.Option>
+              <Select.Option value="Urgente">Urgente</Select.Option>
+              <Select.Option value="Imediato">Imediato</Select.Option>
+              <Select.Option value="Opcional">Opcional</Select.Option>
             </Select>
           </Form.Item>
 

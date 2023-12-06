@@ -3,7 +3,7 @@ export default function Nav() {
     <>
       <nav className="flex items-center ml-3 gap-5">
         <div>
-          <a href="/">Task Manager</a>
+          <a href="/"><img className="h-10" src="/list.png"></img></a>
         </div>
         <ul className="flex gap-3">
           <li><a href="/">Home</a></li>

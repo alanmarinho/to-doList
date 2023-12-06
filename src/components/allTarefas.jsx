@@ -1,12 +1,13 @@
 import { collection, getDocs,deleteDoc, doc } from 'firebase/firestore';
 import { useEffect, useState} from 'react';
 import {db} from "../services/fireBaseConnection";
-import { Table, Modal } from 'antd';
+import { Table, Modal, message } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 export default function AllTarefas() {
   const [tarefas, setTarefas] = useState([]);
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -16,12 +17,27 @@ export default function AllTarefas() {
     fetchData();
   }, []);
 
+  const success = () => {
+    messageApi.open({
+      type: 'success',
+      content: `Tarefa excluída com sucesso!`,
+    });
+  };
+
+  const error = () => {
+    messageApi.open({
+      type: 'error',
+      content: 'Erro ao excluir tarefa!',
+    });
+  };
+
   const showPromiseConfirm = (id) => {
 
     Modal.confirm({
       title: 'Tem certeza?',
       icon: <ExclamationCircleOutlined />,
       content: 'Você tem certeza que quer deletar este item?',
+      okButtonProps: {danger: true},
       onOk() {
         const handleDelete = async () => {
           try{
@@ -29,9 +45,11 @@ export default function AllTarefas() {
             await deleteDoc(doc(db, "tarefas", id));
             const data = await getDocs(collection(db, "tarefas"));
             setTarefas(data.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+            success();
     
-          }catch(error){
-            console.log(error)
+          }catch(err){
+            error();
+            console.log(err)
           }
         };
         handleDelete();
@@ -53,7 +71,7 @@ export default function AllTarefas() {
       key: 'intialDate',
       render: (dataInicio) => {
         return dayjs(dataInicio.toDate()).format('DD/MM/YYYY')
-      }
+      },
     },
     {
       title: 'Data de Fim',
@@ -61,7 +79,7 @@ export default function AllTarefas() {
       key: 'finalDate',
       render: (dataInicio) => {
         return dayjs(dataInicio.toDate()).format('DD/MM/YYYY')
-      }
+      },
     },
     {
       title: 'Descrição',
@@ -97,9 +115,10 @@ export default function AllTarefas() {
   ]
 
   return (
-    <div>
-      <h1>Todas as tarefas</h1>
-      <Table style={{textAlign: 'center' }} dataSource={tarefas} columns={tableColumns} />
+    <div className='flex flex-col gap-3'>
+      {contextHolder}
+      <h1 className='text-4xl'>Todas as tarefas</h1>
+      <Table locale={{emptyText:"Você não tem tarefas registradas"}} style={{textAlign: 'center' }} dataSource={tarefas} columns={tableColumns} />
     </div>
   );
 }

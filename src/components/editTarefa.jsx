@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import {db} from "../services/fireBaseConnection";
 import { getDoc, doc, Timestamp, updateDoc, deleteDoc} from 'firebase/firestore';
-import { Form, Input, Select, Button, message, DatePicker, Modal} from 'antd';
+import { Form, Input, Select, message, DatePicker, Modal} from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
@@ -83,6 +83,7 @@ export default function EditTarefa() {
       title: 'Tem certeza?',
       icon: <ExclamationCircleOutlined />,
       content: 'Você tem certeza que quer deletar este item?',
+      okButtonProps: {danger: true},
       onOk() {
         const handleDelete = async () => {
           try{
@@ -105,11 +106,11 @@ export default function EditTarefa() {
 
   const mensagem = "Preencha o campo"
   return (
-    <div>
+    <div className="flex flex-col gap-3">
     <h1 className="text-white text-4xl">Editar Tarefa</h1> 
       <div className="flex flex-col items-center justify-center">
       {contextHolder}
-    <div className="bg-slate-400 p-5  m-5">
+    <div className="bg-slate-400 p-5">
         <Form form={form} layout="horizontal" onFinish={editarTarefa} >
           <Form.Item label="Tarefa"name="nome" rules={[{required: true, message:mensagem}]}>
             <Input type="text" />
@@ -149,13 +150,14 @@ export default function EditTarefa() {
               <Select.Option value="outros">Outros</Select.Option>
             </Select>
           </Form.Item>
-
-          <Form.Item>
-            <Button className="bg-green-500" type="primary" htmlType="submit">Editar tarefa</Button>
+          <Form.Item className="flex justify-end">
+            <button className="bg-green-500 p-2 rounded hover:bg-green-600 hover:scale-95 text-white" type="submit">Editar tarefa</button>
           </Form.Item> 
         </Form>
-        <Button className="bg-yellow-300" onClick={() => { window.location.href = "/tarefas" }}>Cancelar</Button>  
-        <Button className="bg-red-500" onClick={() => { showPromiseConfirm()}}>Apagar tarefa</Button>      
+          <div className="flex items-center justify-start gap-3">
+           <button className="bg-red-500 p-2 rounded hover:bg-red-600 hover:scale-95 text-white" onClick={() => { showPromiseConfirm()}}>Apagar tarefa</button>      
+           <button className="bg-yellow-400 p-2 rounded hover:bg-yellow-600 hover:scale-95 text-white" onClick={() => { window.location.href = "/tarefas" }}>Cancelar</button>  
+          </div>
       </div>
     </div>
     
