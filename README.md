@@ -26,7 +26,7 @@ Editar o nome do arquino "configFireBase copy.js" para "configFireBase.js"
 Adicionar as configurações do seu banco no arquivo "configFireBase.js"
 
 ## Configuração do banco json-server
-Não precisa de configuração, apenas executar o comando "npm run dev" na pasta "to-doList2" mas se quiser verificar o banco de dados, o arquivo "db.json" está na pasta src/services do "to-doList2" acessível executando npx json-server.
+Não precisa de configuração, apenas executar o comando "npm run dev" na pasta "to-doList2" mas se quiser verificar o banco de dados, o arquivo "db.json" está na pasta src/services do "to-doList2" acessível executando:
 
 ```bash
 npx json-server --watch db.json
